@@ -43,6 +43,11 @@ if curFrame ~= 1 %Its a loop on a frame that is not the first frame
         % determine alpha or omega based on prior frames
     elseif  numEnds == 2
         k = 1;
+        if dataList(curFrame - k).IsLoop == 1
+            disp('aa');
+        else
+            disp('bb');
+        end
         while dataList(curFrame - k).IsLoop == 1 && curFrame ~= 1
             k = k+1;
         end

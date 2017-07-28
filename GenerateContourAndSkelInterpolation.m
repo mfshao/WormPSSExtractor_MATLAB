@@ -1,4 +1,4 @@
-%% Generate AllFeatures Only
+%% Generate ContourAndSkel Interpolation
 addAllCodePaths();
 % 1. User goes into GlobalEnv and sets -- to change later 
     % globalEnv.StudyInstanceName:  ie: 'Run1'
@@ -12,6 +12,5 @@ vid = 'tph1_f6';
 disp('Setting global environment')
 env = setGlobalEnv('MSHAO1.DPU', vid);
 
-disp('Extracting All Features')
-% 3. Extract All Features
-extractAllFeatures( env );
+disp('Interpolating ContourAndSkel')
+interpolateContourAndSkel( env );

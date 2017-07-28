@@ -75,8 +75,6 @@ function extractContourAndSkel( env )
     fprintf(g, 'CameraStartRow: %s \n', num2str(cameraStartRow) );
     fprintf(g, 'CameraStartCol: %s \n', num2str(cameraStartCol) );
     
-  
-    
     %Load the camera steps for each frame as an ordreed pair with (0,0)
     %where there are not steps
     if env.ShotChanges == 1 
@@ -152,9 +150,8 @@ function extractContourAndSkel( env )
     while ~isDone(videoFReader) && iFrame <= endFrame 
        
         videoFrame = step(videoFReader);
-        iFrame = iFrame+1;
-        
-        
+        iFrame = iFrame+1
+
         %Start collecting data after the start frame is reached
         if iFrame >= startFrame           
             %Extract and display seq number and frame number 
@@ -162,8 +159,7 @@ function extractContourAndSkel( env )
             dl(iDatarow).SeqNum = iDatarow;
             dl(iDatarow).FrameNum = iFrame;
             if iFrame == 1 || mod(iFrame,env.DisplayRate) == 0
-                disp(iFrame);
-                toc
+                disp(iFrame);             
             end
                 
             %Load the time epoch for this frame into mmeory
@@ -253,31 +249,32 @@ function extractContourAndSkel( env )
                 dl = loadEndIntensity(gsImage,bwImage,sktpAll, dl, iDatarow);
                 dl = loadSkelShapeAndSize(distTransform, sktpAll, dl, iDatarow);
                 %dl = loadWidthProfiles(distTransform, env.WidthProfileRange, dl, iDatarow);
+                dl(iDatarow).SegStatus = 'Good';
                 
-                prevDl = dl(iDatarow);
-
-                %if mod(iDatarow, env.SaveRate) == 0
+                %prevDl = dl(iDatarow);
+                toc
+                
+                if mod(iDatarow, env.SaveRate) == 0
                      save(outputMatFile,'dl', '-v7.3');        
-                %end
+                end
                 
             catch err
-                prevDl
+                %prevDl
                 newError = sprintf('\n Frame %s: %s', num2str(iFrame),  getReport(err,'extended'));
                 errorFrames = strcat(errorFrames, newError );     
-                dl(iDatarow) = prevDl;
-                dl(iDatarow).SeqNum = iDatarow;
-                dl(iDatarow).FrameNum = iFrame;
-                dl(iDatarow).ElapsedTime = epoch{iFrame};
-                dl(iDatarow).NumRows = numRows;
-                dl(iDatarow).NumCols = numCols;
+                %dl(iDatarow) = prevDl;
+                %dl(iDatarow).SeqNum = iDatarow;
+                %dl(iDatarow).FrameNum = iFrame;
+                %dl(iDatarow).ElapsedTime = epoch{iFrame};
+                %dl(iDatarow).NumRows = numRows;
+                %dl(iDatarow).NumCols = numCols;
+                dl(iDatarow).SegStatus = 'Bad';
             end
         end
     end
      
     release(videoFReader);
     
-    
-   
     %% Save data to disk
    
     %Save the structure array to disk as a Matlab variable
