@@ -14,7 +14,41 @@ function dl = extractAllFeatures( env )
     processName = 'ExtractAllFeatures';
     [ studyInstancePath, f, g, ~] = initializeProcess( processName, env);
    
+       %% Set up data source 
    
+    videoInputFile = sprintf('%s\\%s', env.VideoInputDir, env.VideoInputName );
+
+    %Get number of frames from a VideoReader object
+    obj = VideoReader(videoInputFile);
+    numFrames = obj.NumberOfFrames;
+    clear obj;
+
+    %Get most other info from a VideoFileReader object
+    videoFReader = vision.VideoFileReader(videoInputFile);
+    
+    %% Load crop information into memory
+    
+    %Load the crop frame size and crop location for each frame.
+    %If cropping is not used, set the size to the size of the entire image,
+    %and set all the crop locations to (1,1).
+    if env.Cropping == 1
+        [cropLoc, ~]= loadCropLocations();
+    else
+        cropLoc = ones(numFrames,2);
+    end
+    
+    if env.ShotChanges == 1 
+        [cameraSteps, resolution, stepSize, epoch] = loadCameraStepsEpoch( env ); %reads from file
+    else
+        cameraSteps = zeros(numFrames,2);
+        resolution = 1;
+        stepSize = 0;
+        % Load epoch information into memory
+        epoch = transpose(0:0.1:numFrames);
+    end
+    %Report the pixels Per Step = mm/step * pixels/mm 
+    pixelsPerStep = stepSize * resolution;
+    
     % Load the Matlab structure array variable from disk 
     if isempty(env.InputMatFileName) 
         [fileName,pathName,~] = uigetfile;
@@ -49,20 +83,41 @@ function dl = extractAllFeatures( env )
     %% Process each row
     tic
     errorRows = '';
-    for i = startDatarow:endDatarow 
+    i = startDatarow;
+    while ~isDone(videoFReader) && i < endDatarow 
        
+       videoFrame = step(videoFReader);
         try
             %Display the datarow
             if i == 1 || mod(i,env.DisplayRate) == 0
                 disp(i);
                 toc
             end
+            [dl, ~] = loadCameraInfo(resolution, ...
+                                                    cameraSteps(i,:),...
+                                                    pixelsPerStep,...
+                                                    cropLoc(i,:), ...
+                                                    env,dl,i );
+                
+                %Grab the current frame.  The current format conists of 
+                %RGB with a GS image in each channel
+                gsImage =  im2uint8(videoFrame(:,:,1));
 
+                %Segment the image and get a flag indicating whether a loop
+                [bwImage, ~] =  cornerThresh(gsImage, ...
+                                                    env.EstArea, ...
+                                                    env.StructElementSize );
+
+                %Extract the contour from the bw image.  Keep in local 
+                %coordinates  
+                [perimRow, perimCol] = find( bwperim( bwImage ) );
+                contour = [perimRow, perimCol];
+                
            %get the BW Image - contour is saved in local coordinates
-            bwImage = contour2BwImage(dl(i).Contour, [numRows, numCols]);
+            bwImage = contour2BwImage(contour, [numRows, numCols]);
 
             %Load the shape and size features dervied from the binary image
-            [dl, distTransform] = loadBwShapeAndSize( bwImage, dl, i);
+            [dl, ~] = loadBwShapeAndSize( bwImage, dl, i);
             
             %Load the features determined by analysis of the skewer
             %representation of the skeleton
@@ -87,6 +142,8 @@ function dl = extractAllFeatures( env )
             
             %Load trajectory info
             dl = loadTrajectoryInfo(dl, i);
+            
+            i=i+1;
         catch err
              newError = sprintf('\n Frame %s: %s', num2str(i),  getReport(err,'extended'));
              errorRows = strcat(errorRows, newError );    

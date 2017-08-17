@@ -7,11 +7,11 @@ addAllCodePaths();
    
     
 % 2. Computer probes directory and sets the environment
-vid = 'tph1_f6';
+vid = 'AIB_HR_f6';
 
 disp('Setting global environment')
 env = setGlobalEnv('MSHAO1.DPU', vid);
 
 disp('Extracting All Features')
 % 3. Extract All Features
-extractAllFeatures( env );
+extractAllFeatures( env ); 

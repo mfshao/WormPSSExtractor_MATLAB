@@ -7,7 +7,7 @@
    
     
 % 2. Computer probes directory and sets the environment
-vid = 'N2_HR_nf5';
+vid = 'N2_nf4';
 
 disp('Setting global environment')
 env = setGlobalEnv('MSHAO1.DPU', vid);

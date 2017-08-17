@@ -1,8 +1,7 @@
 function [ env ] = getEnv_extractAllFeatures( globalEnv )
 %SETENV Sets the environment for executing the feature extraction system
 %   Sets code paths, specifies working directories, and manages warning messages
-
-
+    env = globalEnv;
     %Specify where the results will be saved
     env.WorkingDir = globalEnv.WorkingDir;% 'C:\Users\rniehaus\Documents\Elegans\';
     env.StudyInstanceName = globalEnv.StudyInstanceName;%'1stVideo_Test5';
@@ -47,7 +46,7 @@ function [ env ] = getEnv_extractAllFeatures( globalEnv )
     %Set sample size for sub-sampling th sktp prior to calculating bending
     %stats
     env.BendingSampleSize = 13;
-    
+    env.StructElementSize = 2;
     
 
     %% Endpoints from Curvature Calculations

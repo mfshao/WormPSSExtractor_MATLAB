@@ -26,10 +26,11 @@ globalEnv.OutputMatFileName = 'AllFeatures';
 globalEnv.ShotChanges = 1;          %what this mean?
 
 switch video
-    case 'N2_HR_nf5'
-        globalEnv.StudyInstanceName= 'N2_HR_nf5';
-        globalEnv.EndFrame = 88;
-        globalEnv.EstArea = 1500;          % Estimated worm body area in an image
+    case 'AIB_HR_f6'
+        globalEnv.StudyInstanceName= 'AIB_HR_f6';
+        globalEnv.EndFrame = 58261;
+        globalEnv.EndFrame = 2000;
+        globalEnv.EstArea = 900;          % Estimated worm body area in an image
     
     % add more if necessary
 end
