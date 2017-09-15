@@ -7,7 +7,7 @@ addAllCodePaths();
    
     
 % 2. Computer probes directory and sets the environment
-vid = 'AIB_HR_f6';
+vid = 'N2_f1';
 
 disp('Setting global environment')
 env = setGlobalEnv('MSHAO1.DPU', vid);

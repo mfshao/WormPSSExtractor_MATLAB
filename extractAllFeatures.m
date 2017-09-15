@@ -38,13 +38,12 @@ function dl = extractAllFeatures( env )
     end
     
     if env.ShotChanges == 1 
-        [cameraSteps, resolution, stepSize, epoch] = loadCameraStepsEpoch( env ); %reads from file
+        [cameraSteps, resolution, stepSize, ~] = loadCameraStepsEpoch( env ); %reads from file
     else
         cameraSteps = zeros(numFrames,2);
         resolution = 1;
         stepSize = 0;
         % Load epoch information into memory
-        epoch = transpose(0:0.1:numFrames);
     end
     %Report the pixels Per Step = mm/step * pixels/mm 
     pixelsPerStep = stepSize * resolution;
