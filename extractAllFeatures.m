@@ -82,16 +82,18 @@ function dl = extractAllFeatures( env )
     %% Process each row
     tic
     errorRows = '';
-    i = startDatarow;
+    i = startDatarow-1;
     while ~isDone(videoFReader) && i < endDatarow 
        
        videoFrame = step(videoFReader);
+       i=i+1;
         try
             %Display the datarow
             if i == 1 || mod(i,env.DisplayRate) == 0
                 disp(i);
                 toc
             end
+            i
             [dl, ~] = loadCameraInfo(resolution, ...
                                                     cameraSteps(i,:),...
                                                     pixelsPerStep,...
@@ -101,7 +103,7 @@ function dl = extractAllFeatures( env )
                 %Grab the current frame.  The current format conists of 
                 %RGB with a GS image in each channel
                 gsImage =  im2uint8(videoFrame(:,:,1));
-
+                
                 %Segment the image and get a flag indicating whether a loop
                 [bwImage, ~] =  cornerThresh(gsImage, ...
                                                     env.EstArea, ...
@@ -114,10 +116,10 @@ function dl = extractAllFeatures( env )
                 
            %get the BW Image - contour is saved in local coordinates
             bwImage = contour2BwImage(contour, [numRows, numCols]);
-
+            
             %Load the shape and size features dervied from the binary image
             [dl, ~] = loadBwShapeAndSize( bwImage, dl, i);
-            
+
             %Load the features determined by analysis of the skewer
             %representation of the skeleton
             dl = loadSktpSkewerStats(dl, i );
@@ -127,22 +129,21 @@ function dl = extractAllFeatures( env )
 
             %Load bending stats
             dl = loadBendingStats(env.BendingSampleSize,dl, i);
-
+            
             %Load mean sktp movement
             if i == 1;
                 dl(i).SktpMovement = 0;
             else
                 dl(i).SktpMovement = getSktpMovement(dl(i).Sktp, dl(i-1).Sktp);
             end
-            
+
             %Get direction 
             result = getDirection(env.RowsForAverage, env.DirectionSktpSampleSize,dl,i);
             dl(i).DirectionCode = result;
-            
+
             %Load trajectory info
             dl = loadTrajectoryInfo(dl, i);
-            
-            i=i+1;
+
         catch err
              newError = sprintf('\n Frame %s: %s', num2str(i),  getReport(err,'extended'));
              errorRows = strcat(errorRows, newError );    

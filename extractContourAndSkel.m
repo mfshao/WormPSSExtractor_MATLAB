@@ -225,13 +225,13 @@ function extractContourAndSkel( env )
                 sktpAll = getCenterline(segments, endpoints, branchpoints, posture, estLength);
                 %conver tthe Sktp to global , so it can be compared across
                 %frames
-                sktpAll = localToGlobal(sktpAll, totalOffset);
+                sktpAllGlobal = localToGlobal(sktpAll, totalOffset);
                 %Associate endpoints by skewer angle .
                 if iDatarow ~= 1 
                     prevSkewerAngle = dl(iDatarow-1).SkewerAngle;
-                    [sktpAll, skewerAngle] = assocEndpointsBySkewerAngle(sktpAll,prevSkewerAngle, numRows);
+                    [sktpAllGlobal, skewerAngle] = assocEndpointsBySkewerAngle(sktpAllGlobal,prevSkewerAngle, numRows);
                 else
-                     [~, skewerAngle] = getLineAngles(sktpAll(end,:), sktpAll(1,:), numRows); 
+                     [~, skewerAngle] = getLineAngles(sktpAllGlobal(end,:), sktpAllGlobal(1,:), numRows); 
                 end
                 
                 %Save the data
@@ -240,13 +240,13 @@ function extractContourAndSkel( env )
                 dl(iDatarow).Posture = posture;
                 dl(iDatarow).SkewerAngle = skewerAngle;
                 dl(iDatarow).IsLoop = isLoopPosture;
-                dl(iDatarow).Length = getLengthFromPixels(sktpAll);
-                dl(iDatarow).HeadRow = sktpAll(1,1);
-                dl(iDatarow).HeadCol = sktpAll(1,2);
-                dl(iDatarow).TailRow = sktpAll(end,1);
-                dl(iDatarow).TailCol = sktpAll(end,2);
+                dl(iDatarow).Length = getLengthFromPixels(sktpAllGlobal);
+                dl(iDatarow).HeadRow = sktpAllGlobal(1,1);
+                dl(iDatarow).HeadCol = sktpAllGlobal(1,2);
+                dl(iDatarow).TailRow = sktpAllGlobal(end,1);
+                dl(iDatarow).TailCol = sktpAllGlobal(end,2);
                 dl = loadEndpointCurvInfo(curvEndpoints, peaks, dl, iDatarow);
-                dl = loadEndIntensity(gsImage,bwImage,sktpAll, dl, iDatarow);
+                dl = loadEndIntensity(gsImage,bwImage,sktpAllGlobal, dl, iDatarow);
                 dl = loadSkelShapeAndSize(distTransform, sktpAll, dl, iDatarow);
                 %dl = loadWidthProfiles(distTransform, env.WidthProfileRange, dl, iDatarow);
                 dl(iDatarow).SegStatus = 'Good';

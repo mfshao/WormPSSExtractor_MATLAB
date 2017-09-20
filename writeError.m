@@ -1,19 +1,12 @@
-function writeError( err, iFrame, dataRow)
+function writeError( err, iFrame)
 %WRITEERROR Writes an error message to a log file and to output console
 
-    disp(dataRow);
     disp(iFrame);
     disp(err);
     disp(err.message);
     disp(err.stack);
     disp(err.identifier);
 
-
-
-
-%     %write the data row
-%     fprintf(logHandle, 'Data Row: %s', iFrame);
-% 
 %     % write the frame number
 %     fprintf(logHandle, 'Frame Number: %s', iFrame);
 % 

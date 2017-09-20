@@ -18,7 +18,7 @@ function dl = loadSktpSkewerStats( dl, i )
 
     catch err
 
-        writeError( err, iFrame, i);
+        writeError( err, i);
         dl(i).SkewerAngle = 0;
         dl(i).SktAmpRatio = 0 ;
         dl(i).SktCmptFactor = 0;
