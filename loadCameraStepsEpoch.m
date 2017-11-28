@@ -88,11 +88,12 @@ parenExp = '\(([^)]+)\)';
 intExp = '(-?\d+)';
 
 [~,n] = size(F);
+I = {};
 for i = 1:n
     if strcmp(F(i).msg, 'wrote frame')
         F(i).xmove = 0;
         F(i).ymove = 0;
-        
+         I=[I,i];
         if moving
             
             if timeElapsed <= MOVEDUR
@@ -130,7 +131,7 @@ for i = 1:n
         end
         
     else
-        
+       
         matches = regexp( F(i).msg, parenExp, 'match');
         move = matches{1,1}{3}      ;
         matches = regexp( move, intExp, 'match');
@@ -150,14 +151,18 @@ for i = 1:n
     end
 end
 
+A=cell2mat(I);
+A=uint64(A);
+F=F(A);
 
-
+% writetable(struct2table(F), 'somefile.txt');
 %% to workable format
 G = struct2cell(F);
-
-
+A=ut8(A);
 G1 = transpose(G(:,:));
+
 msg = vertcat(G1(:,2));
+disp(msg);
 msg = vertcat(msg{:,1});
 x = vertcat(G1{:,6}); %x step directions --> col
 y = vertcat (G1{:,7});%y step directions --> row
