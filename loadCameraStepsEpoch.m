@@ -158,7 +158,6 @@ F=F(A);
 % writetable(struct2table(F), 'somefile.txt');
 %% to workable format
 G = struct2cell(F);
-A=ut8(A);
 G1 = transpose(G(:,:));
 
 msg = vertcat(G1(:,2));
